@@ -43,7 +43,6 @@ export const CAT_COLOR = {
   autre:        "#9CA3AF",
 };
 
-<<<<<<< HEAD
 // Icônes par catégorie
 
 export const CAT_ICON = {
