@@ -60,7 +60,7 @@ export const CAT_ICON = {
 
 // Statuts signalement (valeurs backend snake_case)
 export const STATUT_META = {
-<<<<<<< HEAD
+
   en_attente:     { label: "En attente",     bg: "rgba(200,16,46,0.12)",  text: "#F87171", dot: "#C8102E"  },
   en_cours:       { label: "En cours",       bg: "rgba(6,182,212,0.12)",  text: "#22D3EE", dot: "#06B6D4"  },
   pris_en_charge: { label: "Pris en charge", bg: "rgba(139,92,246,0.12)", text: "#A78BFA", dot: "#8B5CF6"  },
