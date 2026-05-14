@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { T, FILIERES, NIVEAUX, SITES, SEMESTRES } from "../theme.js";
 import { Card, Btn, Input, Modal, Spinner, EmptyState, SectionTitle, Pill, Divider} from "../components/ui.jsx";
-import { getUsers, createUser, updateRole, toggleSuspend, deleteUser, getNotesEtudiant, createNote, getNotesFilieres, getEtudiantsNotes, getClasses, getPlanningClasse, updateSeance, createSeance, getSalles, createSalle, deleteSalle, uploadPlanning, getInfos, createInfo, deleteInfo } from "../api.js";
+import { getUsers, createUser, updateRole, toggleSuspend, deleteUser, getNotesEtudiant, createNote, getNotesFilieres, getEtudiantsNotes, getClasses, getPlanningClasse, updateSeance, getSalles, createSalle, deleteSalle, uploadPlanning, getInfos, createInfo, deleteInfo } from "../api.js";
 
 // ╔══════════════════════════════════════════════════════════════════════════════╗
 // ║  PAGE NOTES                                                                  ║
