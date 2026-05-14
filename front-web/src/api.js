@@ -98,6 +98,17 @@ export const createNote = (t, data) =>
 /** Analyse IA des notes */
 export const analyserNotes = (t) => req("/notes/analyse", {}, t);
 
+/** Filières avec notes disponibles */
+export const getNotesFilieres = (t) => req("/notes/filieres", {}, t);
+
+/** Étudiants par filière/classe */
+export const getEtudiantsNotes = (t, { filiere, classe } = {}) => {
+  const q = new URLSearchParams();
+  if (filiere) q.set("filiere", filiere);
+  if (classe)  q.set("classe", classe);
+  return req(`/notes/etudiants?${q}`, {}, t);
+};
+
 // ─── PLANNING ─────────────────────────────────────────────────────────────────
 
 /** Liste des classes ayant un planning */
