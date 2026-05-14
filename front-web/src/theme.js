@@ -1,9 +1,8 @@
-<<<<<<< HEAD
+
 // ─── Campus Voice — Design System v4.0 ───────────────────────────────────────
-=======
+
 
 // ─── Campus Voice — Design System v4.2 ───────────────────────────────────────
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
 
 export const T = {
   bg:           "#06090F",
@@ -27,11 +26,10 @@ export const T = {
   pink:         "#EC4899",
 };
 
-<<<<<<< HEAD
+
 // Couleurs par catégorie de signalement (valeurs backend)
-=======
+
 // Couleurs par catégorie de signalement
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
 export const CAT_COLOR = {
   wifi:         "#3B82F6",
   electricite:  "#F59E0B",
@@ -47,8 +45,7 @@ export const CAT_COLOR = {
 
 <<<<<<< HEAD
 // Icônes par catégorie
-=======
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
+
 export const CAT_ICON = {
   wifi:         "📶",
   electricite:  "⚡",
@@ -111,7 +108,6 @@ export const NAV_ITEMS = [
   { id: "planning",     icon: "◷",  label: "Planning"       },
   { id: "infos",        icon: "📣", label: "Infos & News"   },
   { id: "utilisateurs", icon: "◎",  label: "Utilisateurs"  },
-=======
   en_attente:     { label:"En attente",     bg:"rgba(200,16,46,0.12)",  text:"#F87171", dot:"#C8102E"  },
   en_cours:       { label:"En cours",       bg:"rgba(6,182,212,0.12)",  text:"#22D3EE", dot:"#06B6D4"  },
   pris_en_charge: { label:"Pris en charge", bg:"rgba(139,92,246,0.12)", text:"#A78BFA", dot:"#8B5CF6"  },
@@ -159,5 +155,4 @@ export const NAV_ITEMS = [
   { id:"planning",     icon:"◷",  label:"Planning"      },
   { id:"infos",        icon:"📣", label:"Infos & News"  },
   { id:"utilisateurs", icon:"◎",  label:"Utilisateurs" },
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
 ];
