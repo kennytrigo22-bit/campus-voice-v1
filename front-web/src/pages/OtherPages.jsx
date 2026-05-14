@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 // ─── pages/OtherPages.jsx ─────────────────────────────────────────────────────
 // Notes · Planning · Infos · Utilisateurs
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -221,7 +221,7 @@ export function PageNotes({ token, showToast }) {
           </Btn>
         </div>
       </Modal>
-=======
+
 // ─── pages/OtherPages.jsx — Campus Voice v4.3 ────────────────────────────────
 // Fixes :
 //   • Création utilisateur : /register (form-urlencoded, username=matricule, role=etudiant)
@@ -413,13 +413,11 @@ function SectionHdr({ title, sub, action }) {
         {sub && <p style={{ fontSize: 13, color: T.sub, margin: 0 }}>{sub}</p>}
       </div>
       {action && <div style={{ display: "flex", gap: 10 }}>{action}</div>}
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
     </div>
   );
 }
 
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-<<<<<<< HEAD
+
 // ║  PAGE PLANNING                                                               ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
 const STATUT_SEANCE_COLOR = {
@@ -427,7 +425,7 @@ const STATUT_SEANCE_COLOR = {
   en_ligne:   T.blue,
   annule:     T.red,
   reporte:    T.orange,
-=======
+      
 // ║  PAGE NOTES                                                                  ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
 export function PageNotes({ token, showToast }) {
@@ -706,7 +704,7 @@ const STATUT_SEANCE = {
   en_ligne:  { color: T.blue,   label: "En ligne"  },
   annule:    { color: T.red,    label: "Annulé"    },
   reporte:   { color: T.orange, label: "Reporté"   },
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
+
 };
 
 export function PagePlanning({ token, showToast }) {
@@ -719,7 +717,6 @@ export function PagePlanning({ token, showToast }) {
   const [editFrm,    setEditFrm]    = useState({});
   const [salleModal, setSalleModal] = useState(false);
   const [salleFrm,   setSalleFrm]  = useState({ site: "AFI_SIEGE", nom: "", capacite: "30" });
-<<<<<<< HEAD
   const [uploadFrm,  setUploadFrm] = useState({ filiere: "SRT", niveau: "M2", semestre: "S1" });
   const fileRef = useRef();
 
@@ -762,7 +759,6 @@ export function PagePlanning({ token, showToast }) {
     } catch (e) {
       showToast?.("❌ " + e.message, "error");
     }
-=======
   const [uploadFrm,  setUploadFrm]  = useState({ filiere: "SRT", niveau: "M2", semestre: "S1" });
   const [uploading,  setUploading]  = useState(false);
   const fileRef = useRef();
@@ -818,12 +814,10 @@ export function PagePlanning({ token, showToast }) {
       setSalleFrm({ site: "AFI_SIEGE", nom: "", capacite: "30" });
       apiFetch("/salles", {}, token).then(setSalles);
     } catch (e) { showToast?.("❌ " + e.message, "error"); }
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
   };
 
   const supprimerSalle = async (id) => {
     try {
-<<<<<<< HEAD
       await deleteSalle(token, id);
       setSalles(prev => prev.filter(s => s.id !== id));
       showToast?.("✅ Salle désactivée", "success");
@@ -831,7 +825,6 @@ export function PagePlanning({ token, showToast }) {
       showToast?.("❌ " + e.message, "error");
     }
   };
-
   const handleUpload = async (file) => {
     try {
       const d = await uploadPlanning(token, file, uploadFrm);
@@ -841,7 +834,6 @@ export function PagePlanning({ token, showToast }) {
     } catch (e) {
       showToast?.("❌ " + e.message, "error");
     }
-=======
       await apiFetch(`/salles/${id}`, { method: "DELETE" }, token);
       setSalles(p => p.filter(s => s.id !== id));
       showToast?.("✅ Salle désactivée", "success");
@@ -867,12 +859,10 @@ export function PagePlanning({ token, showToast }) {
       if (d.classe) chargerSeances(d.classe);
     } catch (e) { showToast?.("❌ " + e.message, "error"); }
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
   };
 
   return (
     <div>
-<<<<<<< HEAD
       <SectionTitle action={
         <div style={{ display: "flex", gap: 10 }}>
           <Btn variant="ghost" small onClick={() => setSalleModal(true)}>
@@ -987,7 +977,6 @@ export function PagePlanning({ token, showToast }) {
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <Btn variant="ghost" onClick={() => setEditModal(null)}>Annuler</Btn>
           <Btn onClick={saveSeance}>Enregistrer</Btn>
-=======
       <SectionHdr
         title="Planning des cours"
         sub={`${classes.length} classe(s) · ${salles.length} salle(s)`}
@@ -1129,12 +1118,10 @@ export function PagePlanning({ token, showToast }) {
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button style={btn("ghost")} onClick={() => setEditModal(null)}>Annuler</button>
           <button style={btn()} onClick={sauvegarderSeance}>💾 Enregistrer</button>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
         </div>
       </Modal>
 
       {/* Modal salles */}
-<<<<<<< HEAD
       <Modal open={salleModal} onClose={() => setSalleModal(false)} title="Gestion des salles" width={480}>
         <div style={{ marginBottom: 16, maxHeight: 220, overflowY: "auto" }}>
           {salles.length === 0 ? (
@@ -1171,7 +1158,6 @@ export function PagePlanning({ token, showToast }) {
         <Input label="Capacité" type="number" value={salleFrm.capacite}
           onChange={v => setSalleFrm(p => ({ ...p, capacite: v }))} />
         <Btn onClick={ajouterSalle} disabled={!salleFrm.nom}>Créer la salle</Btn>
-=======
       <Modal open={salleModal} onClose={() => setSalleModal(false)} title="🏛️ Gestion des salles" width={460}>
         <div style={{ maxHeight: 200, overflowY: "auto", marginBottom: 16 }}>
           {salles.length === 0 ? (
@@ -1206,24 +1192,19 @@ export function PagePlanning({ token, showToast }) {
             + Créer la salle
           </button>
         </div>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
       </Modal>
     </div>
   );
 }
 
 // ╔══════════════════════════════════════════════════════════════════════════════╗
-<<<<<<< HEAD
 // ║  PAGE INFOS & NEWS                                                           ║
-=======
-// ║  PAGE INFOS — multipart/form-data image + vidéo + édition                   ║
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
+// ║  PAGE INFOS — multipart/form-data image + vidéo + édition                    ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
 export function PageInfos({ token, showToast }) {
   const [infos,   setInfos]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal,   setModal]   = useState(false);
-<<<<<<< HEAD
   const [form,    setForm]    = useState({
     titre: "", description: "", lien: "", date_evenement: "", cible: "tous",
   });
@@ -1263,7 +1244,6 @@ export function PageInfos({ token, showToast }) {
     } catch (e) {
       showToast?.("❌ " + e.message, "error");
     }
-=======
   const [saving,  setSaving]  = useState(false);
   const [form,    setForm]    = useState({
     titre: "", description: "", lien: "", date_evenement: "", cible: "tous",
@@ -1343,12 +1323,10 @@ export function PageInfos({ token, showToast }) {
     const f = e.target.files[0]; if (!f) return;
     if (f.size > 50 * 1024 * 1024) { showToast?.("❌ Vidéo max 50 Mo", "error"); return; }
     setVideoFile(f);
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
   };
 
   return (
     <div>
-<<<<<<< HEAD
       <SectionTitle action={<Btn onClick={() => setModal(true)}>📣 Publier une info</Btn>}>
         <h2 style={{ fontSize: 20, fontWeight: 900, color: T.text, margin: 0 }}>
           Infos & Actualités
@@ -1388,7 +1366,6 @@ export function PageInfos({ token, showToast }) {
               </div>
 
               {/* Contenu */}
-=======
       <SectionHdr
         title="Infos & Actualités"
         sub={`${infos.length} publication(s)`}
@@ -1431,16 +1408,12 @@ export function PageInfos({ token, showToast }) {
                 <button onClick={() => supprimer(info.id)} style={{ background: "none",
                   border: "none", color: T.muted, cursor: "pointer", fontSize: 16 }}>🗑️</button>
               </div>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
               <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text, margin: "0 0 8px" }}>
                 {info.titre}
               </h3>
               {info.description && (
-<<<<<<< HEAD
                 <p style={{ fontSize: 12, color: T.sub, lineHeight: 1.6, margin: "0 0 10px" }}>
-=======
                 <p style={{ fontSize: 12, color: T.sub, lineHeight: 1.6, margin: "0 0 8px", flex: 1 }}>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
                   {info.description}
                 </p>
               )}
@@ -1450,7 +1423,6 @@ export function PageInfos({ token, showToast }) {
                   🔗 {info.lien}
                 </a>
               )}
-<<<<<<< HEAD
 
               {/* Réactions */}
               {info.total_reactions > 0 && (
@@ -1471,7 +1443,6 @@ export function PageInfos({ token, showToast }) {
                 <span>{new Date(info.created_at).toLocaleDateString("fr-FR")}</span>
               </div>
             </Card>
-=======
               {info.total_reactions > 0 && (
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
                   {Object.entries(info.reactions || {}).filter(([, v]) => v > 0).map(([em, cnt]) => (
@@ -1487,12 +1458,10 @@ export function PageInfos({ token, showToast }) {
                 <span>{new Date(info.created_at).toLocaleDateString("fr-FR")}</span>
               </div>
             </div>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
           ))}
         </div>
       )}
 
-<<<<<<< HEAD
       <Modal open={modal} onClose={() => setModal(false)} title="Publier une information">
         <Input label="Titre *" value={form.titre}
           onChange={v => setForm(p => ({ ...p, titre: v }))}
@@ -1510,7 +1479,6 @@ export function PageInfos({ token, showToast }) {
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
           <Btn variant="ghost" onClick={() => setModal(false)}>Annuler</Btn>
           <Btn onClick={publish} disabled={!form.titre}>Publier</Btn>
-=======
       {/* Modal publication */}
       <Modal open={modal} onClose={() => { setModal(false); reinit(); }}
         title="📣 Publier une information" width={600}>
@@ -1566,7 +1534,6 @@ export function PageInfos({ token, showToast }) {
             onClick={publier} disabled={saving || !form.titre}>
             {saving ? "Publication…" : "📣 Publier"}
           </button>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
         </div>
       </Modal>
     </div>
@@ -1576,14 +1543,13 @@ export function PageInfos({ token, showToast }) {
 // ╔══════════════════════════════════════════════════════════════════════════════╗
 // ║  PAGE UTILISATEURS                                                           ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
-<<<<<<< HEAD
+        
 const ROLE_COLOR = { etudiant: T.cyan, admin: T.yellow, admin_general: T.accent };
 const ROLE_OPTS  = [
   { value: "etudiant",     label: "Étudiant" },
   { value: "admin",        label: "Administrateur" },
   { value: "admin_general",label: "Admin Général" },
 ];
-=======
 // Création :
 //   • Étudiant → POST /register (form-urlencoded, champ = "username")
 //   • Admin / Admin général → POST /admin/creer (JSON)
@@ -1600,12 +1566,10 @@ const BADGE_ICONS = {
   super_contributeur:   "⭐",
   protecteur_du_campus: "🛡️",
 };
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
 
 export function PageUtilisateurs({ token, showToast }) {
   const [users,    setUsers]    = useState([]);
   const [loading,  setLoading]  = useState(true);
-<<<<<<< HEAD
   const [roleF,    setRoleF]    = useState("");
   const [search,   setSearch]   = useState("");
   const [modal,    setModal]    = useState(false);
@@ -1705,7 +1669,7 @@ export function PageUtilisateurs({ token, showToast }) {
         <h2 style={{ fontSize: 20, fontWeight: 900, color: T.text, margin: 0 }}>Utilisateurs</h2>
         <span style={{ fontSize: 13, color: T.sub }}>{filtered.length} résultat(s)</span>
       </SectionTitle>
-=======
+
   const [selected, setSelected] = useState(null);
   const [notesEtu, setNotesEtu] = useState(null);
 
@@ -1837,12 +1801,11 @@ export function PageUtilisateurs({ token, showToast }) {
         sub={`${usersFiltres.length} affiché(s) sur ${users.length} total`}
         action={<button style={btn()} onClick={() => setModal(true)}>+ Créer un compte</button>}
       />
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
+
 
       {/* Stats rapides */}
       <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
         {[
-<<<<<<< HEAD
           { label: "Étudiants",      val: statsRole.etudiant || 0,     color: T.cyan   },
           { label: "Admins",         val: statsRole.admin || 0,        color: T.yellow },
           { label: "Admins généraux",val: statsRole.admin_general || 0,color: T.accent },
@@ -1853,7 +1816,6 @@ export function PageUtilisateurs({ token, showToast }) {
             fontSize: 12, color: T.sub }}>
             <span style={{ fontWeight: 700, color, fontSize: 16 }}>{val}</span>
             {" "}{label}
-=======
           { k: "etudiant",     l: "Étudiants",      c: T.cyan   },
           { k: "admin",        l: "Admins",          c: T.yellow },
           { k: "admin_general",l: "Admins généraux", c: T.accent },
@@ -1864,13 +1826,11 @@ export function PageUtilisateurs({ token, showToast }) {
             display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 24, fontWeight: 900, color: c }}>{stats[k] || 0}</span>
             <span style={{ fontSize: 12, color: T.sub }}>{l}</span>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
           </div>
         ))}
       </div>
 
       {/* Filtres */}
-<<<<<<< HEAD
       <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="🔍 Rechercher par nom, matricule, classe…"
@@ -1987,7 +1947,6 @@ export function PageUtilisateurs({ token, showToast }) {
             disabled={!form.matricule || !form.nom || !form.prenom || !form.mot_de_passe}>
             Créer le compte
           </Btn>
-=======
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1.5fr", gap: 12, marginBottom: 16 }}>
         {[
           { label: "FILIÈRE", key: "filiereF", set: setFiliereF, val: filiereF,
@@ -2276,7 +2235,6 @@ export function PageUtilisateurs({ token, showToast }) {
             disabled={saving || !form.matricule || !form.nom || !form.prenom || !form.mot_de_passe}>
             {saving ? "Création…" : "✅ Créer le compte"}
           </button>
->>>>>>> 2113eb7 (Amelelioration de l'xperience utilisateurs de l'app mobile et du dashbord)
         </div>
       </Modal>
     </div>
