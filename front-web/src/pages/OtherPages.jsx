@@ -233,7 +233,7 @@ export function PageNotes({ token, showToast }) {
 import { useState, useEffect, useCallback, useRef } from "react";
 import { T, FILIERES, NIVEAUX, SITES } from "../theme.js";
 
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const BASE = import.meta.env.VITE_API_URL || "https://campus-voice-8d0u.onrender.com";
 
 // ─── Fetch helpers ────────────────────────────────────────────────────────────
 async function apiFetch(url, opts = {}, token) {
