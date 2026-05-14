@@ -1,4 +1,3 @@
-
 // ─── pages/OtherPages.jsx ─────────────────────────────────────────────────────
 // Notes · Planning · Infos · Utilisateurs
 import { useState, useEffect, useCallback, useRef } from "react";
