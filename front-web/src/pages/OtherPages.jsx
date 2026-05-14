@@ -236,6 +236,7 @@ import { T, FILIERES, NIVEAUX, SITES } from "../theme.js";
 const BASE = import.meta.env.VITE_API_URL || "https://campus-voice-8d0u.onrender.com";
 
 // ─── Fetch helpers ────────────────────────────────────────────────────────────
+
 async function apiFetch(url, opts = {}, token) {
   const headers = { ...(opts.headers || {}) };
   if (token) headers["Authorization"] = `Bearer ${token}`;
