@@ -156,8 +156,35 @@ export const deleteSalle = (t, id) =>
 export const getInfos = (t) => req("/infos", {}, t);
 
 /** Publier une info */
-export const createInfo = (t, data) =>
-  req("/infos", { method: "POST", body: JSON.stringify(data) }, t);
+/** Publier une info (avec image/vidéo optionnels) */
+export const createInfo = async (t, data, imageFile, videoFile) => {
+  const fd = new FormData();
+  fd.append("titre", data.titre);
+  fd.append("cible", data.cible || "tous");
+  if (data.description)    fd.append("description",    data.description);
+  if (data.lien)           fd.append("lien",           data.lien);
+  if (data.date_evenement) fd.append("date_evenement", data.date_evenement);
+  if (imageFile)           fd.append("image",          imageFile, imageFile.name);
+  if (videoFile)           fd.append("video",          videoFile, videoFile.name);
+
+  const res = await fetch("/infos", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${t}` },
+    body: fd,
+  });
+
+  if (!res.ok) {
+    let msg = `Erreur ${res.status}`;
+    try {
+      const err = await res.json();
+      msg = err.detail || err.message || JSON.stringify(err);
+    } catch {
+      msg = await res.text().catch(() => msg);
+    }
+    throw new Error(msg);
+  }
+  return res.json();
+};
 
 /** Supprimer une info */
 export const deleteInfo = (t, id) =>
