@@ -546,11 +546,7 @@ export function PageInfos({ token, showToast }) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-    const res = await fetch(`${BASE}/infos`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-      if (!res.ok) throw new Error(`Erreur ${res.status}`);
-      setInfos(await res.json());
+      setInfos(await getInfos(token));
     } catch (e) {
       showToast?.("❌ " + e.message, "error");
     } finally {
