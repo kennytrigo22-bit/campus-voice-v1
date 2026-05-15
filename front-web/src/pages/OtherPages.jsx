@@ -546,9 +546,9 @@ export function PageInfos({ token, showToast }) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/infos", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const res = await fetch(`${BASE}/infos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
       if (!res.ok) throw new Error(`Erreur ${res.status}`);
       setInfos(await res.json());
     } catch (e) {
@@ -595,6 +595,7 @@ export function PageInfos({ token, showToast }) {
   // ── Publication ──────────────────────────────────────────────────────────────
   const publish = async () => {
     if (!form.titre.trim()) return;
+    console.log("TOKEN USED:", token);
     setPublishing(true);
     try {
       await createInfo(token, form, imageFile, videoFile);
@@ -612,7 +613,7 @@ export function PageInfos({ token, showToast }) {
   const remove = async (id) => {
     if (!confirm("Supprimer cette information ?")) return;
     try {
-      const res = await fetch(`/infos/${id}`, {
+      const res = await fetch(`${BASE}/infos/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
