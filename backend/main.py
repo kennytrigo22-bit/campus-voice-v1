@@ -2123,3 +2123,71 @@ def supprimer_anciennes(
     ).delete()
     db.commit()
     return {"message": f"Notifications lues de plus de {jours} jours supprimées"}
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  ROUTE CHATBOT IA — À AJOUTER DANS main.py                               ║
+# ║  Ajoute ces schémas et cette route dans ton fichier main.py               ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+# ── Schémas Pydantic (ajoute avec les autres classes BaseModel) ───────────────
+
+class ChatMessage(BaseModel):
+    role:    str   # "user" ou "assistant"
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+    system:   str = ""
+
+# ── Route (ajoute à la fin de main.py) ───────────────────────────────────────
+
+@app.post("/chatbot")
+async def chatbot_ia(
+    req: ChatRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Endpoint chatbot IA — appelé par le mobile.
+    Utilise Groq (LLaMA 3.1) avec la clé GROQ_API_KEY du .env
+    """
+    if not GROQ_API_KEY:
+        raise HTTPException(status_code=503, detail="Clé API IA non configurée sur le serveur")
+
+    # Limiter l'historique à 14 messages pour éviter les tokens excessifs
+    messages_history = req.messages[-14:] if len(req.messages) > 14 else req.messages
+
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            res = await client.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                    "Content-Type":  "application/json",
+                },
+                json={
+                    "model":      "llama-3.1-8b-instant",   # Gratuit et rapide
+                    "max_tokens": 1000,
+                    "temperature": 0.7,
+                    "messages": [
+                        {"role": "system", "content": req.system},
+                        *[{"role": m.role, "content": m.content} for m in messages_history],
+                    ],
+                },
+            )
+
+        if res.status_code != 200:
+            detail = res.json().get("error", {}).get("message", f"Erreur Groq {res.status_code}")
+            raise HTTPException(status_code=502, detail=detail)
+
+        data  = res.json()
+        reply = data["choices"][0]["message"]["content"]
+        return {"reply": reply}
+
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="L'IA met trop de temps à répondre. Réessayez.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur IA : {str(e)}")
