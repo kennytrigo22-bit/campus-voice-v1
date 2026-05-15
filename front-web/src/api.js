@@ -157,6 +157,7 @@ export const getInfos = (t) => req("/infos", {}, t);
 
 /** Publier une info */
 /** Publier une info (avec image/vidéo optionnels) */
+
 export const createInfo = async (t, data, imageFile, videoFile) => {
   const fd = new FormData();
   fd.append("titre", data.titre);
@@ -167,24 +168,17 @@ export const createInfo = async (t, data, imageFile, videoFile) => {
   if (imageFile)           fd.append("image",          imageFile, imageFile.name);
   if (videoFile)           fd.append("video",          videoFile, videoFile.name);
 
+  const headers = { Authorization: `Bearer ${t}` };
+  // Pas de Content-Type ici — le navigateur le génère automatiquement pour FormData
 
-  const res = await fetch(`${BASE}/infos`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${t}` },
-    body: fd,
-  });
+  const r = await fetch(`${BASE}/infos`, { method: "POST", headers, body: fd });
 
-  if (!res.ok) {
-    let msg = `Erreur ${res.status}`;
-    try {
-      const err = await res.json();
-      msg = err.detail || err.message || JSON.stringify(err);
-    } catch {
-      msg = await res.text().catch(() => msg);
-    }
+  if (!r.ok) {
+    let msg = `Erreur ${r.status}`;
+    try { const d = await r.json(); msg = d.detail || msg; } catch (_) {}
     throw new Error(msg);
   }
-  return res.json();
+  return r.json();
 };
 
 /** Supprimer une info */
