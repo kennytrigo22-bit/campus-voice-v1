@@ -167,7 +167,8 @@ export const createInfo = async (t, data, imageFile, videoFile) => {
   if (imageFile)           fd.append("image",          imageFile, imageFile.name);
   if (videoFile)           fd.append("video",          videoFile, videoFile.name);
 
-  const res = await fetch("/infos", {
+
+  const res = await fetch(`${BASE}/infos`, {
     method: "POST",
     headers: { Authorization: `Bearer ${t}` },
     body: fd,
