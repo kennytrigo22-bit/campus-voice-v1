@@ -706,7 +706,7 @@ export function PageInfos({ token, showToast }) {
               )}
 
               {/* Réactions */}
-              {{info.total_reactions > 0 && (
+              {info.total_reactions > 0 && (
                 <div style={{ marginTop: 8, display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {Object.entries(info.reactions_count || info.reactions || {})
                     .filter(([, v]) => v > 0)
