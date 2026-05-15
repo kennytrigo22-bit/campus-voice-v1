@@ -609,11 +609,8 @@ export function PageInfos({ token, showToast }) {
   const remove = async (id) => {
     if (!confirm("Supprimer cette information ?")) return;
     try {
-      const res = await fetch(`${BASE}/infos/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error(`Erreur ${res.status}`);
+      await deleteInfo(token, id);
+      // Si on arrive ici, c'est que ça a réussi — req() aurait lancé une erreur sinon
       setInfos(prev => prev.filter(i => i.id !== id));
       showToast?.("🗑️ Info supprimée", "success");
     } catch (e) {
