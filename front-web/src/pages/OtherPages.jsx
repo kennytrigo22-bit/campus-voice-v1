@@ -517,38 +517,6 @@ export function PagePlanning({ token, showToast }) {
 // Remplace ton ancienne fonction createInfo par celle-ci.
 // Elle envoie les données en multipart/form-data, ce que ton backend attend.
 
-async function createInfo(token, form, imageFile, videoFile) {
-  const fd = new FormData();
-  fd.append("titre",          form.titre);
-  fd.append("cible",          form.cible || "tous");
-  if (form.description)    fd.append("description",    form.description);
-  if (form.lien)           fd.append("lien",           form.lien);
-  if (form.date_evenement) fd.append("date_evenement", form.date_evenement);
-  if (imageFile)           fd.append("image",          imageFile, imageFile.name);
-  if (videoFile)           fd.append("video",          videoFile, videoFile.name);
-
-  const res = await fetch("/infos", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    // NE PAS mettre Content-Type ici — le navigateur le génère automatiquement
-    // avec le bon boundary pour multipart/form-data
-    body: fd,
-  });
-
-  if (!res.ok) {
-    // Extraction propre du message d'erreur pour éviter [object Object]
-    let msg = `Erreur ${res.status}`;
-    try {
-      const err = await res.json();
-      msg = err.detail || err.message || JSON.stringify(err);
-    } catch {
-      msg = await res.text().catch(() => msg);
-    }
-    throw new Error(msg);
-  }
-  return res.json();
-}
-
 // ─── Composant principal ──────────────────────────────────────────────────────
 export function PageInfos({ token, showToast }) {
   const [infos,   setInfos]   = useState([]);
