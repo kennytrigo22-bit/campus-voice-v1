@@ -505,46 +505,150 @@ export function PagePlanning({ token, showToast }) {
 }
 
 // ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║  PAGE INFOS & NEWS                                                           ║
+// ║  PAGE INFOS & NEWS — VERSION CORRIGÉE                                        ║
+// ║  Corrections :                                                                ║
+// ║    1. createInfo utilise FormData (multipart) au lieu de JSON                ║
+// ║    2. Upload image + vidéo ajouté dans le formulaire                         ║
+// ║    3. Affichage image/vidéo dans les cartes                                  ║
+// ║    4. Gestion d'erreur correcte (plus de [object Object])                    ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
+
+// ─── Fonction API corrigée ────────────────────────────────────────────────────
+// Remplace ton ancienne fonction createInfo par celle-ci.
+// Elle envoie les données en multipart/form-data, ce que ton backend attend.
+
+async function createInfo(token, form, imageFile, videoFile) {
+  const fd = new FormData();
+  fd.append("titre",          form.titre);
+  fd.append("cible",          form.cible || "tous");
+  if (form.description)    fd.append("description",    form.description);
+  if (form.lien)           fd.append("lien",           form.lien);
+  if (form.date_evenement) fd.append("date_evenement", form.date_evenement);
+  if (imageFile)           fd.append("image",          imageFile, imageFile.name);
+  if (videoFile)           fd.append("video",          videoFile, videoFile.name);
+
+  const res = await fetch("/infos", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    // NE PAS mettre Content-Type ici — le navigateur le génère automatiquement
+    // avec le bon boundary pour multipart/form-data
+    body: fd,
+  });
+
+  if (!res.ok) {
+    // Extraction propre du message d'erreur pour éviter [object Object]
+    let msg = `Erreur ${res.status}`;
+    try {
+      const err = await res.json();
+      msg = err.detail || err.message || JSON.stringify(err);
+    } catch {
+      msg = await res.text().catch(() => msg);
+    }
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
+// ─── Composant principal ──────────────────────────────────────────────────────
 export function PageInfos({ token, showToast }) {
   const [infos,   setInfos]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal,   setModal]   = useState(false);
-  const [form,    setForm]    = useState({
+  const [publishing, setPublishing] = useState(false);
+
+  // Formulaire texte
+  const [form, setForm] = useState({
     titre: "", description: "", lien: "", date_evenement: "", cible: "tous",
   });
+
+  // Fichiers uploadés (stockés comme objets File, pas en base64)
+  const [imageFile, setImageFile] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
+
+  // Previews locaux
+  const [imagePreview, setImagePreview] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
 
   const CIBLES = [
     { value: "tous", label: "Tous les utilisateurs" },
     ...FILIERES.map(f => ({ value: f.code, label: `Filière ${f.code} — ${f.label}` })),
   ];
 
+  // ── Chargement ──────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
     setLoading(true);
-    try { setInfos(await getInfos(token)); }
-    catch (e) { showToast?.("❌ " + e.message, "error"); }
-    finally { setLoading(false); }
+    try {
+      const res = await fetch("/infos", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(`Erreur ${res.status}`);
+      setInfos(await res.json());
+    } catch (e) {
+      showToast?.("❌ " + e.message, "error");
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
 
   useEffect(() => { load(); }, [load]);
 
+  // ── Gestion fichiers ─────────────────────────────────────────────────────────
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      showToast?.("❌ Image trop lourde (max 10 Mo)", "error");
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) {
+      showToast?.("❌ Vidéo trop lourde (max 50 Mo)", "error");
+      return;
+    }
+    setVideoFile(file);
+    setVideoPreview(URL.createObjectURL(file));
+  };
+
+  const clearMedia = () => {
+    setImageFile(null);
+    setVideoFile(null);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    if (videoPreview) URL.revokeObjectURL(videoPreview);
+    setImagePreview(null);
+    setVideoPreview(null);
+  };
+
+  // ── Publication ──────────────────────────────────────────────────────────────
   const publish = async () => {
+    if (!form.titre.trim()) return;
+    setPublishing(true);
     try {
-      await createInfo(token, form);
+      await createInfo(token, form, imageFile, videoFile);
       showToast?.("✅ Info publiée", "success");
-      setModal(false);
-      setForm({ titre: "", description: "", lien: "", date_evenement: "", cible: "tous" });
+      closeModal();
       load();
     } catch (e) {
       showToast?.("❌ " + e.message, "error");
+    } finally {
+      setPublishing(false);
     }
   };
 
+  // ── Suppression ──────────────────────────────────────────────────────────────
   const remove = async (id) => {
     if (!confirm("Supprimer cette information ?")) return;
     try {
-      await deleteInfo(token, id);
+      const res = await fetch(`/infos/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(`Erreur ${res.status}`);
       setInfos(prev => prev.filter(i => i.id !== id));
       showToast?.("🗑️ Info supprimée", "success");
     } catch (e) {
@@ -552,6 +656,14 @@ export function PageInfos({ token, showToast }) {
     }
   };
 
+  // ── Réinitialisation modal ───────────────────────────────────────────────────
+  const closeModal = () => {
+    setModal(false);
+    setForm({ titre: "", description: "", lien: "", date_evenement: "", cible: "tous" });
+    clearMedia();
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────────
   return (
     <div>
       <SectionTitle action={<Btn onClick={() => setModal(true)}>📣 Publier une info</Btn>}>
@@ -561,6 +673,7 @@ export function PageInfos({ token, showToast }) {
         <span style={{ fontSize: 13, color: T.sub }}>{infos.length} publication(s)</span>
       </SectionTitle>
 
+      {/* ── Liste des infos ── */}
       {loading ? <Spinner /> : infos.length === 0 ? (
         <EmptyState icon="📭" message="Aucune information publiée" action={
           <Btn small onClick={() => setModal(true)}>Publier la première info</Btn>
@@ -573,7 +686,7 @@ export function PageInfos({ token, showToast }) {
         }}>
           {infos.map(info => (
             <Card key={info.id}>
-              {/* Header */}
+              {/* Header pills + bouton supprimer */}
               <div style={{ display: "flex", justifyContent: "space-between",
                 alignItems: "flex-start", marginBottom: 10 }}>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -592,7 +705,29 @@ export function PageInfos({ token, showToast }) {
                 }}>🗑️</button>
               </div>
 
-              {/* Contenu */}
+              {/* Image (si disponible) */}
+              {info.image_url && (
+                <div style={{ marginBottom: 10, borderRadius: 8, overflow: "hidden" }}>
+                  <img
+                    src={info.image_url}
+                    alt={info.titre}
+                    style={{ width: "100%", maxHeight: 200, objectFit: "cover", display: "block" }}
+                  />
+                </div>
+              )}
+
+              {/* Vidéo (si disponible) */}
+              {info.video_url && (
+                <div style={{ marginBottom: 10, borderRadius: 8, overflow: "hidden" }}>
+                  <video
+                    src={info.video_url}
+                    controls
+                    style={{ width: "100%", maxHeight: 200, display: "block" }}
+                  />
+                </div>
+              )}
+
+              {/* Contenu texte */}
               <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text, margin: "0 0 8px" }}>
                 {info.titre}
               </h3>
@@ -631,23 +766,135 @@ export function PageInfos({ token, showToast }) {
         </div>
       )}
 
-      <Modal open={modal} onClose={() => setModal(false)} title="Publier une information">
-        <Input label="Titre *" value={form.titre}
+      {/* ── Modal de publication ── */}
+      <Modal open={modal} onClose={closeModal} title="Publier une information">
+
+        {/* Titre */}
+        <Input
+          label="Titre *"
+          value={form.titre}
           onChange={v => setForm(p => ({ ...p, titre: v }))}
-          placeholder="Ex: Réunion pédagogique vendredi 16h" required />
-        <Input label="Description" value={form.description}
+          placeholder="Ex: Réunion pédagogique vendredi 16h"
+          required
+        />
+
+        {/* Description */}
+        <Input
+          label="Description"
+          value={form.description}
           onChange={v => setForm(p => ({ ...p, description: v }))}
-          placeholder="Détails de l'information…" rows={4} />
-        <Input label="Lien externe (optionnel)" value={form.lien}
+          placeholder="Détails de l'information…"
+          rows={4}
+        />
+
+        {/* ── Upload Image ── */}
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: "block", fontSize: 12, fontWeight: 600,
+            color: T.sub, marginBottom: 6 }}>
+            Image (optionnel — max 10 Mo)
+          </label>
+          {imagePreview ? (
+            <div style={{ position: "relative", borderRadius: 8, overflow: "hidden",
+              marginBottom: 8 }}>
+              <img src={imagePreview} alt="Aperçu"
+                style={{ width: "100%", maxHeight: 180, objectFit: "cover", display: "block" }} />
+              <button
+                onClick={() => { setImageFile(null); URL.revokeObjectURL(imagePreview); setImagePreview(null); }}
+                style={{
+                  position: "absolute", top: 6, right: 6,
+                  background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%",
+                  width: 28, height: 28, cursor: "pointer", color: "#fff", fontSize: 14,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >✕</button>
+            </div>
+          ) : (
+            <label style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 8, padding: "18px 0",
+              border: `2px dashed ${T.border || "rgba(255,255,255,0.15)"}`,
+              borderRadius: 8, cursor: "pointer", fontSize: 13, color: T.sub,
+            }}>
+              📷 Choisir une image
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+            </label>
+          )}
+        </div>
+
+        {/* ── Upload Vidéo ── */}
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: "block", fontSize: 12, fontWeight: 600,
+            color: T.sub, marginBottom: 6 }}>
+            Vidéo (optionnel — max 50 Mo)
+          </label>
+          {videoPreview ? (
+            <div style={{ position: "relative", borderRadius: 8, overflow: "hidden",
+              marginBottom: 8 }}>
+              <video src={videoPreview} controls
+                style={{ width: "100%", maxHeight: 180, display: "block" }} />
+              <button
+                onClick={() => { setVideoFile(null); URL.revokeObjectURL(videoPreview); setVideoPreview(null); }}
+                style={{
+                  position: "absolute", top: 6, right: 6,
+                  background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%",
+                  width: 28, height: 28, cursor: "pointer", color: "#fff", fontSize: 14,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >✕</button>
+            </div>
+          ) : (
+            <label style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 8, padding: "18px 0",
+              border: `2px dashed ${T.border || "rgba(255,255,255,0.15)"}`,
+              borderRadius: 8, cursor: "pointer", fontSize: 13, color: T.sub,
+            }}>
+              🎬 Choisir une vidéo
+              <input
+                type="file"
+                accept="video/mp4,video/webm,video/ogg"
+                onChange={handleVideoChange}
+                style={{ display: "none" }}
+              />
+            </label>
+          )}
+        </div>
+
+        {/* Lien externe */}
+        <Input
+          label="Lien externe (optionnel)"
+          value={form.lien}
           onChange={v => setForm(p => ({ ...p, lien: v }))}
-          placeholder="https://…" />
-        <Input label="Date de l'événement" type="date" value={form.date_evenement}
-          onChange={v => setForm(p => ({ ...p, date_evenement: v }))} />
-        <Input label="Audience" value={form.cible}
-          onChange={v => setForm(p => ({ ...p, cible: v }))} options={CIBLES} />
+          placeholder="https://…"
+        />
+
+        {/* Date événement */}
+        <Input
+          label="Date de l'événement"
+          type="date"
+          value={form.date_evenement}
+          onChange={v => setForm(p => ({ ...p, date_evenement: v }))}
+        />
+
+        {/* Audience */}
+        <Input
+          label="Audience"
+          value={form.cible}
+          onChange={v => setForm(p => ({ ...p, cible: v }))}
+          options={CIBLES}
+        />
+
+        {/* Actions */}
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
-          <Btn variant="ghost" onClick={() => setModal(false)}>Annuler</Btn>
-          <Btn onClick={publish} disabled={!form.titre}>Publier</Btn>
+          <Btn variant="ghost" onClick={closeModal} disabled={publishing}>Annuler</Btn>
+          <Btn onClick={publish} disabled={!form.titre.trim() || publishing}>
+            {publishing ? "Publication…" : "Publier"}
+          </Btn>
         </div>
       </Modal>
     </div>
