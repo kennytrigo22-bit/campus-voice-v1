@@ -706,14 +706,20 @@ export function PageInfos({ token, showToast }) {
               )}
 
               {/* Réactions */}
-              {info.total_reactions > 0 && (
+              {{info.total_reactions > 0 && (
                 <div style={{ marginTop: 8, display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {Object.entries(info.reactions || {}).filter(([, v]) => v > 0).map(([e, c]) => (
-                    <span key={e} style={{
-                      background: "rgba(255,255,255,0.06)", borderRadius: 10,
-                      padding: "2px 8px", fontSize: 12,
-                    }}>{e} {c}</span>
-                  ))}
+                  {Object.entries(info.reactions_count || info.reactions || {})
+                    .filter(([, v]) => v > 0)
+                    .map(([e, c]) => (
+                      <span key={e} style={{
+                        background: "rgba(255,255,255,0.06)", borderRadius: 10,
+                        padding: "2px 8px", fontSize: 12,
+                      }}>{e} {c}</span>
+                    ))
+                  }
+                  <span style={{ fontSize: 11, color: T.muted, alignSelf: "center" }}>
+                    {info.total_reactions} réaction{info.total_reactions > 1 ? "s" : ""}
+                  </span>
                 </div>
               )}
 
