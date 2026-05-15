@@ -1,3 +1,4 @@
+const BASE = "https://campus-voice-8d0u.onrender.com";
 // ─── pages/OtherPages.jsx ─────────────────────────────────────────────────────
 // Notes · Planning · Infos · Utilisateurs
 import { useState, useEffect, useCallback, useRef } from "react";
