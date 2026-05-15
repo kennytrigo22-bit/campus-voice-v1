@@ -671,7 +671,7 @@ export function PageInfos({ token, showToast }) {
               {info.image_url && (
                 <div style={{ marginBottom: 10, borderRadius: 8, overflow: "hidden" }}>
                   <img
-                    src={info.image_url}
+                    src={`${BASE}${info.image_url}`}
                     alt={info.titre}
                     style={{ width: "100%", maxHeight: 200, objectFit: "cover", display: "block" }}
                   />
@@ -682,7 +682,7 @@ export function PageInfos({ token, showToast }) {
               {info.video_url && (
                 <div style={{ marginBottom: 10, borderRadius: 8, overflow: "hidden" }}>
                   <video
-                    src={info.video_url}
+                    src={`${BASE}${info.video_url}`}
                     controls
                     style={{ width: "100%", maxHeight: 200, display: "block" }}
                   />
